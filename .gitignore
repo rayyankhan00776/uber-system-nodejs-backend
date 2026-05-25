@@ -1,0 +1,6 @@
+.env
+/user/.env
+/node_modules
+/user/node_modules
+/dist
+/user/dist
