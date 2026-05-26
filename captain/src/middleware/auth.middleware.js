@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
-import userModel from "../models/user.model.js";
+import captainModel from "../models/captain.model.js";
 import blacklistTokenModel from "../models/blacklisttoken.model.js";
 export async function authMiddleware(req, res, next) {
     try {
@@ -18,12 +18,12 @@ export async function authMiddleware(req, res, next) {
 
         const decoded = jwt.verify(token, config.JWT_SECRET);
 
-        const user = await userModel.findById(decoded.id);
-        if (!user) {
-            return res.status(401).json({ message: "User not found" });
+        const captain = await captainModel.findById(decoded.id);
+        if (!captain) {
+            return res.status(401).json({ message: "Captain not found" });
         }
 
-        req.user = user;
+        req.captain = captain;
 
         next();
     } catch (error) {

@@ -16,7 +16,7 @@ export async function registerUser(req, res) {
         await newUser.save();
         const token = jwt.sign({ id: newUser._id }, config.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token);
-        res.status(201).json({ message: 'User created successfully', data: { name, email } });
+        res.status(201).json({ message: 'User created successfully', data: { name, email }, token });
     } catch (error) {
         res.status(500).json({ message: 'Error creating user', error });
     }
@@ -35,7 +35,7 @@ export async function loginUser(req, res) {
         }
         const token = jwt.sign({ id: user._id }, config.JWT_SECRET, { expiresIn: '1h' });
         res.cookie('token', token);
-        res.status(200).json({ message: 'Login successful', data: { name: user.name, email } });
+        res.status(200).json({ message: 'Login successful', data: { name: user.name, email: user.email }, token });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
     }

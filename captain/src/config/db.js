@@ -3,9 +3,9 @@ import config from './config.js';
 const connectDB = async () => {
     try {
         await mongoose.connect(config.MONGO_URI);
-        console.log('user side MongoDB connected successfully 🟢');
+        console.log('captain side MongoDB connected successfully 🟢');
     } catch (error) {
-        console.error('user side MongoDB connection error:', error);
+        console.error('captain side MongoDB connection error:', error);
         process.exit(1);
     }
 };
