@@ -12,3 +12,7 @@
 /captain/node_modules
 /captain/.env
 /captain/logs
+/ride/dist
+/ride/node_modules
+/ride/.env
+/ride/logs

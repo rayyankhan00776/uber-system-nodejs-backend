@@ -9,6 +9,8 @@ app.use(consoleLogger);
 app.use(fileLogger);
 app.use('/v1/api/user', expressProxy('http://localhost:3001'));
 app.use('/v1/api/captain', expressProxy('http://localhost:3002'));
+app.use('/v1/api/ride', expressProxy('http://localhost:3003'));
+
 
 
 app.listen(3000, () => {
