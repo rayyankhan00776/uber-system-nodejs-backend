@@ -1,16 +1,26 @@
 {
   "name": "gateway",
   "version": "1.0.0",
-  "main": "app.js",
+  "private": true,
+  "description": "API Gateway for the Uber System microservices demo (reverse proxy to user/captain/ride services).",
   "type": "module",
+  "main": "app.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "test": "node -e \"console.log('No tests specified')\""
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "uber-system",
+    "microservices",
+    "api-gateway",
+    "express",
+    "proxy"
+  ],
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "express": "^5.2.1",
     "express-http-proxy": "^2.1.2",

@@ -1,17 +1,28 @@
 {
   "name": "ride",
   "version": "1.0.0",
-  "main": "server.js",
+  "private": true,
+  "description": "Ride service for the Uber System microservices demo (create ride, accept ride, publish RabbitMQ events).",
   "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node -e \"console.log('No tests specified')\""
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "uber-system",
+    "microservices",
+    "ride-service",
+    "express",
+    "mongodb",
+    "rabbitmq",
+    "jwt"
+  ],
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "amqplib": "^2.0.1",
     "axios": "^1.16.1",

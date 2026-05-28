@@ -1,17 +1,28 @@
 {
   "name": "user",
   "version": "1.0.0",
-  "main": "server.js",
+  "private": true,
+  "description": "User service for the Uber System microservices demo (auth, profile, ride acceptance long-poll).",
   "type": "module",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node -e \"console.log('No tests specified')\""
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "uber-system",
+    "microservices",
+    "user-service",
+    "express",
+    "mongodb",
+    "rabbitmq",
+    "jwt"
+  ],
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "amqplib": "^2.0.1",
     "bcrypt": "^6.0.0",
