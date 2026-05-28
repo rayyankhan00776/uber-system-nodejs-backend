@@ -11,7 +11,8 @@
   "scripts": {
     "dev": "nodemon server.js",
     "start": "node server.js",
-    "test": "node -e \"console.log('No tests specified')\""
+    "test": "node --test",
+    "test:all": "npm --prefix ../user test && npm --prefix ../captain test && npm --prefix ../ride test && npm --prefix ../gateway test"
   },
   "keywords": [
     "uber-system",
@@ -34,6 +35,8 @@
     "morgan": "^1.10.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "mongodb-memory-server": "^10.2.1",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.1.4"
   }
 }

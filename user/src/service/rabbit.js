@@ -1,5 +1,25 @@
 import amqplib from "amqplib";
 import config from "../config/config.js";
+import { EventEmitter } from "events";
+
+const USE_MEMORY_DRIVER =
+    process.env.RABBIT_DRIVER === "memory" ||
+    process.env.NODE_ENV === "test";
+
+const MEMORY_BUS = (() => {
+    if (!USE_MEMORY_DRIVER) return undefined;
+    if (globalThis.__UBER_SYSTEM_MEMORY_BUS__) return globalThis.__UBER_SYSTEM_MEMORY_BUS__;
+
+    const bus = {
+        emitter: new EventEmitter(),
+    };
+
+    // Avoid MaxListenersExceededWarning in test runs.
+    bus.emitter.setMaxListeners(0);
+
+    globalThis.__UBER_SYSTEM_MEMORY_BUS__ = bus;
+    return bus;
+})();
 
 let connection;
 let channel;
@@ -61,6 +81,14 @@ function tryParseJSON(value) {
 
 // Default export is a function so you can do: `import connect from './service/rabbit.js'; connect();`
 export async function connect() {
+    if (USE_MEMORY_DRIVER) {
+        if (!hasLoggedConnected) {
+            console.log("[RabbitMQ] Using in-memory driver at user service");
+            hasLoggedConnected = true;
+        }
+        return true;
+    }
+
     try {
         await getChannel();
 
@@ -83,6 +111,13 @@ export async function connect() {
  * @param {{ durable?: boolean, persistent?: boolean }} [options]
  */
 export async function publishToQueue(queueName, message, options = {}) {
+    if (USE_MEMORY_DRIVER) {
+        const emitter = MEMORY_BUS?.emitter;
+        const payload = typeof message === "string" ? tryParseJSON(message) : message;
+        emitter?.emit(queueName, payload);
+        return true;
+    }
+
     const { durable = true, persistent = true } = options;
     const ch = await getChannel();
 
@@ -104,6 +139,29 @@ export async function publishToQueue(queueName, message, options = {}) {
  * @param {{ durable?: boolean, prefetch?: number, requeueOnError?: boolean }} [options]
  */
 export async function subscribeToQueue(queueName, handler, options = {}) {
+    if (USE_MEMORY_DRIVER) {
+        const { requeueOnError = false } = options;
+        const emitter = MEMORY_BUS?.emitter;
+
+        const listener = async (payload) => {
+            try {
+                await handler(payload, undefined);
+            } catch (error) {
+                console.error(`Error processing in-memory message from queue '${queueName}':`, error);
+                if (requeueOnError) {
+                    setImmediate(() => emitter?.emit(queueName, payload));
+                }
+            }
+        };
+
+        emitter?.on(queueName, listener);
+
+        return {
+            consumerTag: `memory:${queueName}`,
+            cancel: async () => emitter?.off(queueName, listener),
+        };
+    }
+
     const { durable = true, prefetch = 1, requeueOnError = false } = options;
     const ch = await getChannel();
 
