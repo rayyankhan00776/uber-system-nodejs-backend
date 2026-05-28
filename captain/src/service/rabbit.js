@@ -65,7 +65,7 @@ export async function connect() {
         await getChannel();
 
         if (!hasLoggedConnected) {
-            console.log("[RabbitMQ] Connected at ride service");
+            console.log("[RabbitMQ] Connected at captain service");
             hasLoggedConnected = true;
         }
 

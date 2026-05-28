@@ -4,7 +4,12 @@ import captainModel from "../models/captain.model.js";
 import blacklistTokenModel from "../models/blacklisttoken.model.js";
 export async function authMiddleware(req, res, next) {
     try {
-        const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        const authHeader = req.headers.authorization;
+        const [scheme, credentials] = (authHeader ?? '').split(' ');
+        const bearerToken = scheme?.toLowerCase() === 'bearer' ? credentials : undefined;
+
+        // Prefer Authorization header to avoid cookie name collisions across services.
+        const token = bearerToken || req.cookies?.captain_token || req.cookies?.token;
 
         if (!token) {
             return res.status(401).json({ message: "No token provided" });

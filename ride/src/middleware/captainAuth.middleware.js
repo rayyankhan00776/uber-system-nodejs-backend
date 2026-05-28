@@ -1,14 +1,15 @@
 import jwt from "jsonwebtoken";
 import axios from "axios";
 import config from "../config/config.js";
-export async function authMiddleware(req, res, next) {
+
+export async function captainAuthMiddleware(req, res, next) {
     try {
         const authHeader = req.headers.authorization;
         const [scheme, credentials] = (authHeader ?? '').split(' ');
         const bearerToken = scheme?.toLowerCase() === 'bearer' ? credentials : undefined;
 
-        // Prefer Authorization header to avoid cookie collisions with captain auth.
-        const token = bearerToken || req.cookies?.user_token;
+        // Prefer Authorization header to avoid cookie collisions with user auth.
+        const token = bearerToken || req.cookies?.captain_token;
 
         if (!token) {
             return res.status(401).json({ message: "No token provided" });
@@ -21,7 +22,7 @@ export async function authMiddleware(req, res, next) {
             return res.status(401).json({ message: "Invalid token" });
         }
 
-        const response = await axios.get(`${config.BASE_URL}/v1/api/user/profile`, {
+        const response = await axios.get(`${config.BASE_URL}/v1/api/captain/profile`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -29,18 +30,18 @@ export async function authMiddleware(req, res, next) {
 
         const profile = response.data?.data ?? response.data;
         if (!profile) {
-            return res.status(401).json({ message: "User not found" });
+            return res.status(401).json({ message: "Captain not found" });
         }
 
-        const userId = decoded?.id ?? decoded?._id;
-        if (!userId) {
+        const captainId = decoded?.id ?? decoded?._id;
+        if (!captainId) {
             return res.status(401).json({ message: "Invalid token" });
         }
 
-        // Ensure downstream code (like createRide) always has req.user._id.
-        req.user = {
+        // Ensure downstream code always has req.captain._id.
+        req.captain = {
             ...profile,
-            _id: userId,
+            _id: captainId,
         };
 
         next();
@@ -54,4 +55,5 @@ export async function authMiddleware(req, res, next) {
         return res.status(500).json({ message: error?.message ?? 'Internal Server Error' });
     }
 }
-export default authMiddleware;
+
+export default captainAuthMiddleware;
